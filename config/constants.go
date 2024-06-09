@@ -10,6 +10,8 @@ const (
 	SmtpPort            = "587"
 	SmtpUsername        = "amirjonqodirov28@gmail.com"
 	SmtpPassword        = "bgwc hetf jyxo otkk"
+
+	ExchengeRateApi		="cur_live_eE6yAHP3sCsWzfpJREGkKdEjEEiXApJzR0vqT28W"
 )
 
 type CardType int

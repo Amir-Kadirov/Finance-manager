@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS card (
     balance integer default 0
 );
 
+ALTER TABLE customer ADD COLUMN deleted_at timestamp;
 ALTER TABLE card ADD FOREIGN KEY (customer_id) REFERENCES customer (id);
 
 

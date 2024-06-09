@@ -35,8 +35,17 @@ func (s customerService) CustomerGetById(ctx context.Context,id string) (models.
 	return resp,nil
 }
 
-func (s customerService) PaymentHistory(ctx context.Context,id string) (models.PaymentHistory,error) {
-	resp,err:=s.storage.CustomerStorage().PaymentHistory(ctx,id)
+func (s customerService) Delete(ctx context.Context,id string) error {
+	err:=s.storage.CustomerStorage().Delete(ctx,id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s customerService) PaymentHistory(ctx context.Context,req models.PaymentHistoryRequest) (models.PaymentHistory,error) {
+	resp,err:=s.storage.CustomerStorage().PaymentHistory(ctx,req)
 	if err!=nil {
 		return resp,err
 	}

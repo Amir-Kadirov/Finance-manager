@@ -30,6 +30,13 @@ type TransactionInfo struct {
 	CardId     string    `json:"card_id"`
 }
 
+type PaymentHistoryRequest struct {
+	Search string `json:"search"`
+	Page   uint64 `json:"page"`
+	Limit  uint64 `json:"limit"`
+	Id string `json:"id"`
+}
+
 type PaymentHistory struct {
 	TransactionInfo []TransactionInfo `json:"payment_history"`
 }

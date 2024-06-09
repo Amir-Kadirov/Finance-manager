@@ -22,11 +22,14 @@ func New(service service.IServiceManager, log logger.ILogger) *gin.Engine {
 
 	r.POST("/customer", h.CreateCustomer)
 	r.GET("/customer/:id", h.CustomerGetById)
-	r.GET("/customer/paymenthistory/:id",h.PaymentHistory)
+	r.POST("/customer/paymenthistory/:id",h.PaymentHistory)
 	r.GET("/customer/expensecalculator/:id",h.ExpenseCalculator)
-
+	r.DELETE("/customer/delete/:id",h.Delete)
 
 	r.POST("/card",h.CreateCard)
+	r.DELETE("/card/delete/:id",h.DeleteCard)
+
+	r.POST("/currency/rate",h.CurrencyRate)
 
 	r.PUT("/transaction",h.TransactionToCard)
 

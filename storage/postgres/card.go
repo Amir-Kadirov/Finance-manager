@@ -52,3 +52,13 @@ func (c *cardRepo) CreateCard(ctx context.Context, card models.CreateCard) (stri
 
 	return cardId, nil
 }
+
+func (c *cardRepo) Delete(ctx context.Context,id string) error {
+	query:=`UPDATE card SET deleted_at=NOW() WHERE id=$1 AND deleted_at is null`
+	_,err:=c.db.Exec(ctx,query,id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

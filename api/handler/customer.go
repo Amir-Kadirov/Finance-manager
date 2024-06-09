@@ -64,29 +64,35 @@ func (h Handler) CustomerGetById(c *gin.Context) {
 	handleResponse(c,h.Log,"Get successfully",http.StatusOK,data)
 }
 
-// @Router		/customer/paymenthistory/{id} [get]
+// @Router		/customer/paymenthistory/{id} [post]
 // @Summary		Get payment history a customer
 // @Description	This api get payment history a customer
 // @Tags		Customer
+// @Accept		json
 // @Produce		json
-// @Param		id path string true "Customer id"
+// @Param		payment  body models.PaymentHistoryRequest true "payment"
 // @Success		200  {object}  models.Response
 // @Failure		400  {object}  models.Response
 // @Failure		404  {object}  models.Response
 // @Failure		500  {object}  models.Response
 func (h Handler) PaymentHistory(c *gin.Context) {
-	id:=c.Param("id")
+	req := models.PaymentHistoryRequest{}
 
-	data,err:=h.Service.Customer().PaymentHistory(c.Request.Context(),id)
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handleResponse(c, h.Log, "error while reading request body", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	data,err:=h.Service.Customer().PaymentHistory(c.Request.Context(),req)
 	if err!=nil {
-		handleResponse(c, h.Log, "error while get paymenthistory customer", http.StatusBadRequest, err.Error())
+		handleResponse(c, h.Log, "error while get payment history customer", http.StatusBadRequest, err.Error())
 		return
 	}
 
 	handleResponse(c,h.Log,"Get successfully",http.StatusOK,data)
 }
 
-// @Router		/customer/expensecalculator/{id} [get]
+// @Router		/customer/expenses/{id} [get]
 // @Summary		Get payment expensecalculator a customer
 // @Description	This api get expensecalculator a customer
 // @Tags		Customer
@@ -106,4 +112,25 @@ func (h Handler) ExpenseCalculator(c *gin.Context) {
 	}
 
 	handleResponse(c,h.Log,"Get successfully",http.StatusOK,data)
+}
+
+// @Router		/customer/delete/{id} [delete]
+// @Summary		Delete a customer
+// @Description	This api delete a customer
+// @Tags		Customer
+// @Param		id path string true "Customer id"
+// @Success		200  {object}  models.Response
+// @Failure		400  {object}  models.Response
+// @Failure		404  {object}  models.Response
+// @Failure		500  {object}  models.Response
+func (h Handler) DeleteCard(c *gin.Context) {
+	id:=c.Param("id")
+
+	err:=h.Service.Customer().Delete(c.Request.Context(),id)
+	if err!=nil {
+		handleResponse(c, h.Log, "error while get delete customer", http.StatusBadRequest, err.Error())
+		return
+	}
+
+	handleResponse(c,h.Log,"Get successfully",http.StatusOK,nil)
 }

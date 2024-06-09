@@ -22,7 +22,15 @@ func (s cardService) Create(ctx context.Context, card models.CreateCard) (string
 		fmt.Println("error while creating card, err: ", err)
 		return "", err
 	}
-	// logic
 
 	return CardId, nil
+}
+
+func (s cardService) Delete(ctx context.Context,id string) error {
+	err:=s.storage.CardStorage().Delete(ctx,id)
+	if err != nil {
+		return err
+	}
+	
+	return nil
 }

@@ -21,6 +21,26 @@ definitions:
       phone:
         type: string
     type: object
+  models.ExchangeRateRequest:
+    properties:
+      amount:
+        type: integer
+      from:
+        type: string
+      to:
+        type: string
+    type: object
+  models.PaymentHistoryRequest:
+    properties:
+      id:
+        type: string
+      limit:
+        type: integer
+      page:
+        type: integer
+      search:
+        type: string
+    type: object
   models.Response:
     properties:
       data: {}
@@ -80,6 +100,69 @@ paths:
       summary: Creates a card
       tags:
       - Card
+  /card/delete/{id}:
+    delete:
+      description: This api delete a card
+      parameters:
+      - description: Card id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete a card
+      tags:
+      - Card
+  /currency/rate:
+    post:
+      consumes:
+      - application/json
+      description: This api checks currency rate
+      parameters:
+      - description: currency
+        in: body
+        name: currency
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExchangeRateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Check currency rate
+      tags:
+      - Currency
   /customer:
     post:
       consumes:
@@ -145,7 +228,36 @@ paths:
       summary: Get by id a customer
       tags:
       - Customer
-  /customer/expensecalculator/{id}:
+  /customer/delete/{id}:
+    delete:
+      description: This api delete a customer
+      parameters:
+      - description: Customer id
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/models.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.Response'
+      summary: Delete a customer
+      tags:
+      - Customer
+  /customer/expenses/{id}:
     get:
       description: This api get expensecalculator a customer
       parameters:
@@ -177,14 +289,17 @@ paths:
       tags:
       - Customer
   /customer/paymenthistory/{id}:
-    get:
+    post:
+      consumes:
+      - application/json
       description: This api get payment history a customer
       parameters:
-      - description: Customer id
-        in: path
-        name: id
+      - description: payment
+        in: body
+        name: payment
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/models.PaymentHistoryRequest'
       produces:
       - application/json
       responses:

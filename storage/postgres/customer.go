@@ -53,10 +53,10 @@ func (c *customerRepo) CustomerGetById(ctx context.Context, id string) (models.C
 					FROM customer cus 
 					JOIN card c ON cus.id=c.customer_id 
 					JOIN payment_info t on t.customer_id=cus.id 
-					WHERE cus.id=$1`
+						WHERE cus.id=$1 AND deleted_at is null`
 	row,err := c.db.Query(ctx, query, id)
 	if err!=nil {
-		return resp,err
+		return resp,err		
 	}
 	for row.Next(){
 	card := models.CustomerCard{}
@@ -79,12 +79,35 @@ func (c *customerRepo) CustomerGetById(ctx context.Context, id string) (models.C
 	return resp, nil
 }
 
+func (c *customerRepo) Delete(ctx context.Context,id string) error {
+	query:=`UPDATE customer SET deleted_at=NOW() WHERE id=$1 AND deleted_at is null`
+	_,err:=c.db.Exec(ctx,query,id)
+	if err != nil {
+		return err
+	}
 
-func (c *customerRepo) PaymentHistory(ctx context.Context, id string) (models.PaymentHistory,error) {
+	return nil
+}
+
+
+func (c *customerRepo) PaymentHistory(ctx context.Context, req models.PaymentHistoryRequest) (models.PaymentHistory,error) {
 	PaymentHistory:=models.PaymentHistory{}
 
-	query:=`SELECT card_id,history,created_at FROM payment_info WHERE customer_id=$1`
-	row,err:=c.db.Query(ctx,query,id)
+	filter := ""
+	offset := (req.Page - 1) * req.Limit
+
+	if req.Search != "" {
+		filter = ` AND category ILIKE '%` + req.Search + `%' `
+	}
+
+	query:=`SELECT 
+				  card_id,
+				  history,
+				  created_at FROM
+				  			     payment_info 
+								 WHERE customer_id=$1 AND TRUE ` + filter + `
+								 OFFSET $2 LIMIT $3`
+	row,err:=c.db.Query(ctx,query,req.Id,offset,req.Limit)
 	if err!=nil {
 		return PaymentHistory,err
 	}

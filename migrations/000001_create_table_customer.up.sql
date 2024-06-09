@@ -25,3 +25,6 @@ CREATE TABLE IF NOT EXISTS expense (
     beauty_medecine int DEFAULT 0,
     entertaintment_sport int DEFAULT 0
 );
+
+ALTER TABLE payment_info ADD COLUMN category varchar;
+ALTER TABLE customer ADD COLUMN deleted_at timestamp;

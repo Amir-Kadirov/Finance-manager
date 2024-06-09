@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"finance/api/models"
 	"finance/storage"
 	"fmt"
@@ -20,32 +19,29 @@ func NewTransactionService(storage storage.IStorage) transactionService {
 func (s transactionService) TransactionToCard(ctx context.Context, transaction models.TransactionToCard) (string, error) {
 
 	// crud
-	Data, err := s.storage.TransactionStorage().TransactionToCard(ctx,transaction)
+	Data, err := s.storage.TransactionStorage().TransactionToCard(ctx, transaction)
 	if err != nil {
-		log.Fatalf("Error while transaction card crud, err: ", err)
+		log.Fatal("error while transaction card crud, err %w: ", err)
 		return "", err
 	}
 
 	// logic
-	db:=s.storage.GetDB()
-	
-	msg := fmt.Sprintf("from card: %s to card: %s amount: %d",
+	db := s.storage.GetDB()
+
+	msg := fmt.Sprintf("From : %s To : %s amount: %d",
 		transaction.FromCard, transaction.ToCard, transaction.Bill)
 
-	queryPaymentInfo := `INSERT INTO payment_info (customer_id, card_id, history) VALUES ($1, $2, $3)`
-	_, err = db.Exec(ctx, queryPaymentInfo, Data.CustomerIdSend, transaction.FromCard, msg)
-	if err != nil {
-		return "", errors.New("error while inserting to history")
-	}
-
-	queryExpense := `UPDATE expense SET total_expense=total_expense+$1,` + transaction.Category + `=` + transaction.Category +`+$1 WHERE customer_id=$2`
-	_, err = db.Exec(ctx, queryExpense, transaction.Bill, Data.CustomerIdSend)
+	queryPaymentInfo := `INSERT INTO payment_info (customer_id, card_id, history,category) VALUES ($1, $2, $3,$4)`
+	_, err = db.Exec(ctx, queryPaymentInfo, Data.CustomerIdSend, transaction.FromCard, msg, transaction.Category)
 	if err != nil {
 		return "", err
 	}
 
-	
-	fmt.Println(queryExpense)
+	queryExpense := `UPDATE expense SET total_expense=total_expense+$1,` + transaction.Category + `=` + transaction.Category + `+$1 WHERE customer_id=$2`
+	_, err = db.Exec(ctx, queryExpense, transaction.Bill, Data.CustomerIdSend)
+	if err != nil {
+		return "", err
+	}
 
 	return msg, nil
 }
